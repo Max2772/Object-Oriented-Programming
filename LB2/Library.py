@@ -1,6 +1,40 @@
-from datetime import date, timedelta
-from typing import List, Optional
 from abc import ABC, abstractmethod
+from datetime import date, timedelta
+from functools import singledispatchmethod
+from typing import List, Optional, Generic, TypeVar, Iterator
+
+T = TypeVar("T")
+
+
+class OwnedItems(Generic[T]):
+    def __init__(self) -> None:
+        self._items: List[T] = []
+
+    def add(self, item: T) -> None:
+        self._items.append(item)
+
+    def remove(self, item: T) -> bool:
+        if item in self._items:
+            self._items.remove(item)
+            return True
+        return False
+
+    def all(self) -> List[T]:
+        return self._items.copy()
+
+    def __len__(self) -> int:
+        return len(self._items)
+
+    def __iter__(self) -> Iterator[T]:
+        return iter(self._items)
+
+
+class Guest:
+    def __init__(self, name: str):
+        self.name = name
+
+    def get_info(self) -> str:
+        return f"Гость: {self.name}"
 
 
 class Person(ABC):
@@ -49,12 +83,38 @@ class Author(Person):
         return f"Автор: {self.name} ({self.__birth_date.year} г., {self.__nationality})"
 
 
+class Fine:
+    def __init__(self, fine_id: str, amount: float):
+        self.__fine_id = fine_id
+        self.__amount = amount
+        self.__paid = False
+
+    @property
+    def amount(self) -> float:
+        return self.__amount
+
+    def pay(self) -> None:
+        self.__paid = True
+        print(f"Штраф {self.__fine_id} на сумму {self.__amount} BYN оплачен.")
+
+
 class LibraryUser(Person):
     def __init__(self, member_id: str, name: str, address: str, phone: str, email: str):
         super().__init__(member_id, name)
         self.__address = address
         self.__phone = phone
         self.__email = email
+
+        self.__loans = OwnedItems[Loan]()
+        self.__reservations = OwnedItems[Reservation]()
+        self.__fines = OwnedItems[Fine]()
+
+    @property
+    def fines(self) -> OwnedItems[Fine]:
+        return self.__fines
+
+    def add_fine(self, fine: Fine) -> None:
+        self.fines.add(fine)
 
     def get_max_loan_days(self) -> int:
         return 14
@@ -97,18 +157,46 @@ class Librarian(Staff):
         return f"Библиотекарь: {self.name} (нанят с {self.hire_date} г.)"
 
 
+class Genre:
+    def __init__(self, name: str):
+        self.__name = name
+
+    @property
+    def name(self) -> str:
+        return self.__name
+
+
+class Publisher:
+    def __init__(self, publisher_id: str, name: str, location: str):
+        self.__publisher_id = publisher_id
+        self.__name = name
+        self.__location = location
+
+    @property
+    def publisher_id(self) -> str:
+        return self.__publisher_id
+
+    @property
+    def name(self) -> str:
+        return self.__name
+
+    def get_info(self) -> str:
+        return f"Издательство: {self.__name}, {self.__location}"
+
+
 class Book(Publication):
-    def __init__(self, book_id: str, title: str, isbn: str, publication_year: int,
-                 authors: List[Author], publisher: 'Publisher'):
+    def __init__(self, book_id: str, genre: Genre, title: str, isbn: str, publication_year: int,
+                 authors: List[Author], publisher: Publisher):
         super().__init__(book_id, title)
         self.__isbn = isbn
+        self.__genre = genre
         self.__publication_year = publication_year
         self.__authors = authors[:]
         self.__publisher = publisher
 
     def get_info(self) -> str:
         author_names = [a.name for a in self.__authors]
-        return (f"Книга: «{self.title}» (ISBN: {self.__isbn}, {self.__publication_year} г.)"
+        return (f"Книга: «{self.title}» (ISBN: {self.__isbn}, Жанр: {self.__genre.name}, {self.__publication_year} г.)"
                 f" | Авторы: {', '.join(author_names)}"
                 f" | Издательство: {self.__publisher.name}")
 
@@ -151,6 +239,7 @@ class Loan:
 
     def return_loan(self) -> None:
         self.__returned_date = date.today()
+        self.__copy.return_copy()
 
     def is_overdue(self) -> bool:
         return self.__returned_date is None and date.today() > self.__due_date
@@ -165,53 +254,52 @@ class Library:
         self.__library_id = library_id
         self.__name = name
         self.__address = address
-        self.__book_copies: List[BookCopy] = []
-        self.__loans: List[Loan] = []
-        self.__reservations: List[Reservation] = []
-        self.__staff: List[Librarian] = []
+
+        self.__book_copies = OwnedItems[BookCopy]()
+        self.__loans = OwnedItems[Loan]()
+        self.__reservations = OwnedItems[Reservation]()
+        self.__staff = OwnedItems[Librarian]()
+
+    @singledispatchmethod
+    def pay_fine(self, arg):
+        raise NotImplementedError("Неподдерживаемый тип для оплаты штрафа")
+
+    @pay_fine.register
+    def _(self, fine: Fine):
+        print(f"Оплата одного штрафа: {fine.amount}")
+        fine.pay()
+        return True
+
+    @pay_fine.register
+    def _(self, data: tuple):
+        fine, discount = data
+        discounted_amount = fine.amount * (1 - discount / 100)
+        print(f"Оплата штрафа со скидкой: {discounted_amount}")
+        fine.pay()
+        return True
+
+    @pay_fine.register
+    def _(self, user: LibraryUser):
+        print(f"Оплата всех штрафов пользователя {user.name}")
+        for fine in user.fines:
+            fine.pay()
+        return True
 
     def add_copy(self, copy: BookCopy):
-        self.__book_copies.append(copy)
+        self.__book_copies.add(copy)
 
     def add_staff(self, librarian: Librarian):
-        self.__staff.append(librarian)
+        self.__staff.add(librarian)
 
     def issue_loan(self, member: LibraryUser, copy: BookCopy) -> Loan:
         if copy.borrow():
             loan = Loan(f"L{len(self.__loans) + 1:04d}", member, copy)
-            self.__loans.append(loan)
+            self.__loans.add(loan)
             return loan
         raise ValueError("Копия недоступна")
 
     def get_info(self) -> str:
         return f"Библиотека: {self.__name}, {self.__address}"
-
-
-class Publisher:
-    def __init__(self, publisher_id: str, name: str, location: str):
-        self.__publisher_id = publisher_id
-        self.__name = name
-        self.__location = location
-
-    @property
-    def publisher_id(self) -> str:
-        return self.__publisher_id
-
-    @property
-    def name(self) -> str:
-        return self.__name
-
-    def get_info(self) -> str:
-        return f"Издательство: {self.__name}, {self.__location}"
-
-
-class Genre:
-    def __init__(self, name: str):
-        self.__name = name
-
-    @property
-    def name(self) -> str:
-        return self.__name
 
 
 class Reservation:
@@ -226,29 +314,18 @@ class Reservation:
         print(f"Резервирование {self.__reservation_id} отменено.")
 
 
-class Fine:
-    def __init__(self, fine_id: str, amount: float):
-        self.__fine_id = fine_id
-        self.__amount = amount
-        self.__paid = False
-
-    def pay(self) -> None:
-        self.__paid = True
-        print(f"Штраф {self.__fine_id} на сумму {self.__amount} BYN оплачен.")
-
-
 if __name__ == "__main__":
-    print("Демонстрация классов (наследование + композиция + полиморфизм):\n")
 
+    guest = Guest("Временный посетитель")
     publisher = Publisher("P001", "Беларусь", "Минск")
     author = Author("A001", "Лев Толстой", date(1828, 9, 9), "Россия")
-    book = Book("B001", "Война и мир", "978-5-04-123456-7", 1869, [author], publisher)
+    genre = Genre("Роман")
+    book = Book("B001", genre, "Война и мир", "978-5-04-123456-7", 1869, [author], publisher)
     library = Library("LIB01", "Национальная библиотека Беларуси", "пр. Независимости 116")
     copy1 = BookCopy("C001", book)
     student = Student("M001", "Анна Смирнова", "Гикало 9", "+375-29-123-45-67", "anna@example.com")
     teacher = Teacher("M002", "Иван Петров", "Минск", "+375-29-987-65-43", "ivan@hotmail.com")
     librarian = Librarian("L001", "Мария Иванова", date(2019, 6, 1))
-
 
     print("Создание объектов:")
     print(" -", publisher.get_info())
@@ -263,9 +340,25 @@ if __name__ == "__main__":
     library.add_copy(copy1)
     library.add_staff(librarian)
 
-    print("Полиморфизм LibraryUser:")
+    print("\nAd hoc полиморфизм (оплата штрафов):")
+
+    fine1 = Fine("F001", 40.0)
+    fine2 = Fine("F002", 25.0)
+    student.add_fine(fine1)
+    student.add_fine(fine2)
+
+    library.pay_fine(fine1)
+    library.pay_fine((fine2, 25))
+    library.pay_fine(student)
+
+
+    print("\nПолиморфизм подтипов (LibraryUser):")
     for user in [student, teacher]:
         print(f"\t{user.get_info()} - может взять книгу на {user.get_max_loan_days()} дней")
+
+    print("\nПолиморфизм подтипов (Person):")
+    for person in [student, librarian, student, teacher, guest]:
+        print(f"\tЧеловек - {person.get_info()}")
 
     print("\nСценарий выдачи:")
     loan1 = library.issue_loan(student, copy1)
@@ -273,8 +366,7 @@ if __name__ == "__main__":
 
     print("\nЧерез 20 дней...")
     loan1.return_loan()
-    copy1.return_copy()
     print(loan1.get_info())
 
-    fine = Fine("F001", 25.0)
+    fine = Fine("F003", 50.0)
     fine.pay()
