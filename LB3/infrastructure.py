@@ -1,36 +1,63 @@
-import datetime
 import time
+import datetime
+from abc import ABC, abstractmethod
 
 
-class RandomSQLDatabase:
-    """Имитация тяжелой базы данных"""
+class Database(ABC):
+    @abstractmethod
+    def save_order(self, order, total: float) -> None:
+        pass
 
-    def __init__(self, connection_string: str = "random://root:password@localhost:228/shop"):
+
+class RandomSQLDatabase(Database):
+    """Имитация тяжелой базы"""
+    def __init__(self, connection_string="random://root:password@localhost:228/shop"):
         self.connection_string = connection_string
+        self.cache = set()
 
     def save_order(self, order, total: float) -> None:
+        if order.id in self.cache:
+            print("Заказ уже есть в кэше")
+            return
+
         print(f"Connecting to RandomSQL at {self.connection_string} ...")
-        time.sleep(0.5)  # Имитация задержки сети
+        time.sleep(0.5)
 
-        record = "[{ts}] ID: {id} | Type: {typ} | Total: {total:.2f}\n".format(
-            ts=datetime.datetime.now().isoformat(),
-            id=order.id,
-            typ=order.type,
-            total=total
-        )
-
+        record = f"[{datetime.datetime.now().isoformat()}] ID: {order.id} | Type: {order.type} | Total: {total:.2f}\n"
         with open("orders_db.txt", "a", encoding="utf-8") as f:
             f.write(record)
 
+        self.cache.add(order.id)
         print("Order saved successfully.")
 
 
-class SmtpMailer:
-    """Имитация почтового сервиса"""
+class Mailer(ABC):
+    @abstractmethod
+    def send(self, to: str, subject: str, body: str) -> None:
+        pass
 
-    def __init__(self, server: str = "smtp.google.com"):
+
+class SmtpMailer(Mailer):
+    def __init__(self, server="smtp.google.com"):
         self.server = server
 
-    def send_html_email(self, to: str, subject: str, body: str) -> None:
-        print(f">> Connecting to SMTP server {self.server}...")
-        print(f">> Sending EMAIL to {to}\n   Subject: {subject}\n   Body: {body}")
+    def send(self, to: str, subject: str, body: str) -> None:
+        print(f">> Sending EMAIL to {to} | Subject: {subject} | Body: {body}")
+
+
+class TelegramNotifier(Mailer):
+    def __init__(self, chat_id: str):
+        self.chat_id = chat_id
+
+    def send(self, to: str, subject: str, body: str) -> None:
+        print(f">> Sending Telegram to {self.chat_id} | Message: {subject} - {body}")
+
+
+class Logger(Mailer):
+    def __init__(self, logfile="events.log"):
+        self.logfile = logfile
+
+    def send(self, to: str, subject: str, body: str) -> None:
+        with open(self.logfile, "a", encoding="utf-8") as f:
+            f.write(f"[{datetime.datetime.now().isoformat()}] {subject}: {body}\n")
+        print(f">> Logged event: {subject}")

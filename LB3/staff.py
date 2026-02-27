@@ -53,7 +53,10 @@ class RobotPacker(WarehouseWorker):
 def manage_warehouse(workers):
     print("\n--- Warehouse Shift Started ---")
     for worker in workers:
-        worker.process_order()
-        worker.attend_meeting()
-        worker.get_rest()
-        worker.swinging_the_lead()
+        try:
+            worker.process_order()
+            worker.attend_meeting()
+            worker.get_rest()
+            worker.swinging_the_lead()
+        except RuntimeError as e:
+            print(f"Worker error caught: {e}")

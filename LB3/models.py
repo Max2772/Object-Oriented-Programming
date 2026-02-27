@@ -23,3 +23,4 @@ class Order:
     type: str  # "Standard", "Premium", "Budget", "International"
     client_email: str
     destination: Address
+    discount_card: str = "Newbie"
