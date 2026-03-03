@@ -6,7 +6,7 @@ from staff import HumanManager, RobotPacker, manage_warehouse
 
 def main():
     order = Order(
-        id="ORD-999-X",
+        id="ORD-256-X",
         type="Premium",
         items=[
             Item(id="1", name="Thermal Clips", price=1500),
@@ -30,11 +30,11 @@ def main():
     processor.process(order)
 
     print("\nTesting Warehouse:")
-    workers = [
+    staff = [
         HumanManager(),
         RobotPacker(model="George Droid"),
     ]
-    manage_warehouse(workers)
+    manage_warehouse(staff)
 
 
 if __name__ == "__main__":

@@ -56,29 +56,17 @@ class RobotPacker(Worker):
     #     raise RuntimeError("CRITICAL ERROR: Robot cannot waste our money (we hope so)")
 
 
-def manage_orders(workers):
-    for worker in workers:
-        worker.process_order()
-
-
-def manage_meetings(humans):
-    for human in humans:
-        human.attend_meeting()
-
-
-def manage_rest(humans):
-    for human in humans:
-        human.get_rest()
-
-
-def manage_lazy(humans):
-    for human in humans:
-        human.swinging_the_lead()
-
-
-def manage_warehouse(workers, humans):
+def manage_warehouse(staff: list):
     print("\n--- Warehouse Shift Started ---")
-    manage_orders(workers)
-    manage_meetings(humans)
-    manage_rest(humans)
-    manage_lazy(humans)
+    for member in staff:
+        if isinstance(member, Worker):
+            member.process_order()
+
+        if isinstance(member, MeetingParticipant):
+            member.attend_meeting()
+
+        if isinstance(member, Restable):
+            member.get_rest()
+
+        if isinstance(member, LazyParticipant):
+            member.swinging_the_lead()

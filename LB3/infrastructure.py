@@ -23,8 +23,8 @@ class RandomSQLDatabase(Database):
         print(f"Connecting to RandomSQL at {self.connection_string} ...")
         time.sleep(0.5)
 
-        record = f"[{datetime.datetime.now().isoformat()}] ID: {order.id} | Type: {order.type} | Total: {total:.2f}\n"
         with open("orders_db.txt", "a", encoding="utf-8") as f:
+            record = f"[{datetime.datetime.now().isoformat()}] ID: {order.id} | Type: {order.type} | Total: {total:.2f}\n"
             f.write(record)
 
         self.cache.add(order.id)
@@ -42,6 +42,7 @@ class SmtpMailer(Mailer):
         self.server = server
 
     def send(self, to: str, subject: str, body: str) -> None:
+        print(f">> Connecting to SMTP server {self.server}...")
         print(f">> Sending EMAIL to {to} | Subject: {subject} | Body: {body}")
 
 

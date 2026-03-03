@@ -14,7 +14,7 @@ class OrderProcessor:
         if not order.items:
             raise ValueError("Order must have at least one item")
         if not order.destination.city:
-            raise ValueError("destination city is required")
+            raise ValueError("Destination city is required")
 
         # 2. Расчёт суммы
         total = sum(item.price for item in order.items)
