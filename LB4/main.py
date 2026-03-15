@@ -1,9 +1,12 @@
+from pathlib import Path
+
 from LB4.application.logistic_system import LogisticSystem
 from LB4.factory.csv_factory import CSVLogisticFactory
 
 
 if __name__ == "__main__":
-    factory = CSVLogisticFactory("data/logistic.csv")
+    csv_path = str(Path(__file__).resolve().parent / "data" / "logistic.csv")
+    factory = CSVLogisticFactory(csv_path)
     system = LogisticSystem(factory)
 
     cargo_batch = {

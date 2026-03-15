@@ -13,6 +13,7 @@ class CSVLogisticFactory(LogisticFactory):
         self._transport_data: Dict[str, Transport] = {}
         self._read_csv_file(csv_path)
 
+
     def _read_csv_file(self, csv_path: str):
         with open(csv_path, encoding="utf-8") as f:
             reader = csv.DictReader(f, delimiter=";")
@@ -32,11 +33,13 @@ class CSVLogisticFactory(LogisticFactory):
                     )
                     self._transport_data[transport.name] = transport
 
+
     def get_cargo(self, name: str) -> Cargo:
         try:
             return self._cargo_data[name]
         except KeyError:
             raise ValueError(f"Cargo '{name}' not found in factory")
+
 
     def get_transport(self, name: str) -> Transport:
         try:
