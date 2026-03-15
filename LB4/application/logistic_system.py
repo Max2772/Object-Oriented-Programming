@@ -1,6 +1,5 @@
 from typing import Dict
 
-from LB4.domain.shipment import Shipment
 from LB4.factory.abstract_factory import LogisticFactory
 
 
@@ -14,11 +13,11 @@ class LogisticSystem:
             transport_name: str,
             distance: float
     ) -> None:
-        transport = self.factory.create_transport(transport_name)
-        shipment = Shipment(transport, distance)
+        transport = self.factory.get_transport(transport_name)
+        shipment = self.factory.create_shipment(transport, distance)
 
         for cargo_name, quantity in cargo_orders.items():
-            cargo = self.factory.create_cargo(cargo_name)
+            cargo = self.factory.get_cargo(cargo_name)
             shipment.add_cargo(cargo, quantity)
 
         print("\n=== DELIVERY REPORT ===")

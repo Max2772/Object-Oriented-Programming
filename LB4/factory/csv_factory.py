@@ -2,6 +2,7 @@ import csv
 from typing import Dict
 
 from LB4.domain.cargo import Cargo
+from LB4.domain.shipment import Shipment
 from LB4.domain.transport import Transport
 from LB4.factory.abstract_factory import LogisticFactory
 
@@ -31,17 +32,18 @@ class CSVLogisticFactory(LogisticFactory):
                     )
                     self._transport_data[transport.name] = transport
 
-            print(self._cargo_data)
-            print(self._transport_data)
-
-    def create_cargo(self, name: str) -> Cargo:
+    def get_cargo(self, name: str) -> Cargo:
         try:
             return self._cargo_data[name]
         except KeyError:
             raise ValueError(f"Cargo '{name}' not found in factory")
 
-    def create_transport(self, name: str) -> Transport:
+    def get_transport(self, name: str) -> Transport:
         try:
             return self._transport_data[name]
         except KeyError:
             raise ValueError(f"Transport '{name}' not found in factory")
+
+
+    def create_shipment(self, transport: Transport, distance: float) -> Shipment:
+        return Shipment(transport, distance)
