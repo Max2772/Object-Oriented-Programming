@@ -1,0 +1,51 @@
+{
+  "cargo": [
+    {
+      "name": "Электроника",
+      "unit_mass_kg": 1.5,
+      "price_per_kg": 50
+    },
+    {
+      "name": "Одежда",
+      "unit_mass_kg": 0.8,
+      "price_per_kg": 20
+    },
+    {
+      "name": "Оборудование",
+      "unit_mass_kg": 120.0,
+      "price_per_kg": 15
+    },
+    {
+      "name": "Скоропортящиеся продукты",
+      "unit_mass_kg": 10.0,
+      "price_per_kg": 100
+    }
+  ],
+  "transport": [
+    {
+      "name": "Грузовик (Земля)",
+      "cost_per_km": 15.0,
+      "speed_kmh": 80
+    },
+    {
+      "name": "Поезд (Земля)",
+      "cost_per_km": 5.0,
+      "speed_kmh": 60
+    },
+    {
+      "name": "Танкер (Вода)",
+      "cost_per_km": 2.0,
+      "speed_kmh": 35
+    },
+    {
+      "name": "Самолет (Воздух)",
+      "cost_per_km": 150.0,
+      "speed_kmh": 850
+    },
+    {
+      "name": "Вертолет (Воздух)",
+      "cost_per_km": 200.0,
+      "speed_kmh": 250
+    }
+  ]
+}
