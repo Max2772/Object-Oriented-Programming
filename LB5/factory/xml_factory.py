@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+from typing import List, Dict
 
 from LB5.domain.cargo import Cargo
 from LB5.domain.shipment import Shipment
@@ -8,14 +9,17 @@ from LB5.factory.abstract_factory import LogisticFactory
 
 class XMLLogisticFactory(LogisticFactory):
     def __init__(self, xml_path: str):
+        self._cargo_data: Dict[str, Cargo] = {}
+        self._transport_data: Dict[str, Transport] = {}
+        self._read_xml_file(xml_path)
+
+    def _read_xml_file(self, xml_path: str):
         tree = ET.parse(xml_path)
         root = tree.getroot()
-        self._cargo_data = {}
-        self._transport_data = {}
         for cargo_elem in root.findall('cargos/cargo'):
             cargo = Cargo(
                 cargo_elem.get('name'),
-                float(cargo_elem.get('unit_mass')),
+                float(cargo_elem.get('unit_mass_kg')),
                 float(cargo_elem.get('price_per_kg'))
             )
             self._cargo_data[cargo.name] = cargo
@@ -39,3 +43,6 @@ class XMLLogisticFactory(LogisticFactory):
 
     def create_shipment(self, transport: Transport, distance: float) -> Shipment:
         return Shipment(transport, distance)
+
+    def get_all_transports(self) -> List[Transport]:
+        return list(self._transport_data.values())

@@ -11,4 +11,4 @@ class Transport:
         return distance * self.cost_per_km
 
     def delivery_time(self, distance: float) -> float:
-        return distance / self.speed_kmh
+        return round(distance / self.speed_kmh, 2)

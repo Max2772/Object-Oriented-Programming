@@ -1,5 +1,5 @@
 import csv
-from typing import Dict
+from typing import Dict, List
 
 from LB5.domain.cargo import Cargo
 from LB5.domain.shipment import Shipment
@@ -12,7 +12,6 @@ class CSVLogisticFactory(LogisticFactory):
         self._cargo_data: Dict[str, Cargo] = {}
         self._transport_data: Dict[str, Transport] = {}
         self._read_csv_file(csv_path)
-
 
     def _read_csv_file(self, csv_path: str):
         with open(csv_path, encoding="utf-8") as f:
@@ -33,13 +32,11 @@ class CSVLogisticFactory(LogisticFactory):
                     )
                     self._transport_data[transport.name] = transport
 
-
     def get_cargo(self, name: str) -> Cargo:
         try:
             return self._cargo_data[name]
         except KeyError:
             raise ValueError(f"Cargo '{name}' not found in factory")
-
 
     def get_transport(self, name: str) -> Transport:
         try:
@@ -47,6 +44,8 @@ class CSVLogisticFactory(LogisticFactory):
         except KeyError:
             raise ValueError(f"Transport '{name}' not found in factory")
 
-
     def create_shipment(self, transport: Transport, distance: float) -> Shipment:
         return Shipment(transport, distance)
+
+    def get_all_transports(self) -> List[Transport]:
+        return list(self._transport_data.values())

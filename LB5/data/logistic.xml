@@ -1,61 +1,18 @@
 <logistic_data>
 
     <cargos>
-        <cargo>
-            <name>Электроника</name>
-            <unit_mass_kg>1.5</unit_mass_kg>
-            <price_per_kg>50</price_per_kg>
-        </cargo>
-
-        <cargo>
-            <name>Одежда</name>
-            <unit_mass_kg>0.8</unit_mass_kg>
-            <price_per_kg>20</price_per_kg>
-        </cargo>
-
-        <cargo>
-            <name>Оборудование</name>
-            <unit_mass_kg>120.0</unit_mass_kg>
-            <price_per_kg>15</price_per_kg>
-        </cargo>
-
-        <cargo>
-            <name>Скоропортящиеся продукты</name>
-            <unit_mass_kg>10.0</unit_mass_kg>
-            <price_per_kg>100</price_per_kg>
-        </cargo>
+        <cargo name="Электроника" unit_mass_kg="1.5" price_per_kg="50"/>
+        <cargo name="Одежда" unit_mass_kg="0.8" price_per_kg="20"/>
+        <cargo name="Оборудование" unit_mass_kg="120.0" price_per_kg="15"/>
+        <cargo name="Скоропортящиеся продукты" unit_mass_kg="10.0" price_per_kg="100"/>
     </cargos>
 
     <transports>
-        <transport>
-            <name>Грузовик (Земля)</name>
-            <cost_per_km>15.0</cost_per_km>
-            <speed_kmh>80</speed_kmh>
-        </transport>
-
-        <transport>
-            <name>Поезд (Земля)</name>
-            <cost_per_km>5.0</cost_per_km>
-            <speed_kmh>60</speed_kmh>
-        </transport>
-
-        <transport>
-            <name>Танкер (Вода)</name>
-            <cost_per_km>2.0</cost_per_km>
-            <speed_kmh>35</speed_kmh>
-        </transport>
-
-        <transport>
-            <name>Самолет (Воздух)</name>
-            <cost_per_km>150.0</cost_per_km>
-            <speed_kmh>850</speed_kmh>
-        </transport>
-
-        <transport>
-            <name>Вертолет (Воздух)</name>
-            <cost_per_km>200.0</cost_per_km>
-            <speed_kmh>250</speed_kmh>
-        </transport>
+        <transport name="Грузовик (Земля)" cost_per_km="15.0" speed_kmh="80"/>
+        <transport name="Поезд (Земля)" cost_per_km="5.0" speed_kmh="60"/>
+        <transport name="Танкер (Вода)" cost_per_km="2.0" speed_kmh="35"/>
+        <transport name="Самолет (Воздух)" cost_per_km="150.0" speed_kmh="850"/>
+        <transport name="Вертолет (Воздух)" cost_per_km="200.0" speed_kmh="250"/>
     </transports>
 
 </logistic_data>
