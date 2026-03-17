@@ -1,7 +1,6 @@
 import base64
 import io
 import zipfile
-from pathlib import Path
 from typing import List
 
 from LB5.exporters.abstract_exporter import Exporter
