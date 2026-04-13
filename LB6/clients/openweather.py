@@ -1,4 +1,3 @@
-import json
 import requests
 from decimal import Decimal
 from LB6.clients.weather_data_client import WeatherDataClient
