@@ -1,11 +1,13 @@
+from decimal import Decimal
+
 from flask import request, jsonify
-from LB6.controllers.weather import CurrentWeatherController
+
 from LB6.clients.openweather import OpenWeatherClient
-from LB6.shared.utils.env import get_env
+from LB6.controllers.weather import CurrentWeatherController
 from LB6.shared.responses.status import StatusResponse
 from LB6.shared.responses.success import SuccessResponse
-from LB6.models.weather.get import Weather
-from decimal import Decimal
+from LB6.shared.utils.env import get_env
+
 
 class WeatherHandler:
     def __init__(self):
@@ -13,26 +15,49 @@ class WeatherHandler:
         base_url = get_env("OPENWEATHER_BASE_URL", "")
         client = OpenWeatherClient(api_key, base_url)
         self.controller = CurrentWeatherController(client)
-    
+
     def handle_get_current_weather(self):
         try:
             lat_str = request.args.get('lat')
             lon_str = request.args.get('lon')
-            
+
             if not lat_str or not lon_str:
                 return jsonify(StatusResponse(400, "invalid coordinates").to_dict()), 400
-            
+
             try:
                 lat = Decimal(lat_str)
                 lon = Decimal(lon_str)
             except:
                 return jsonify(StatusResponse(400, "invalid coordinates").to_dict()), 400
-            
+
             result, err = self.controller.get_current_weather(lat, lon)
-            
+
             if err:
                 return jsonify(StatusResponse(500, str(err)).to_dict()), 500
-            
+
+            return jsonify(SuccessResponse(200, "Success", result).to_dict()), 200
+        except Exception as e:
+            return jsonify(StatusResponse(500, str(e)).to_dict()), 500
+
+    def handle_get_forecast(self):
+        try:
+            lat_str = request.args.get('lat')
+            lon_str = request.args.get('lon')
+
+            if not lat_str or not lon_str:
+                return jsonify(StatusResponse(400, "invalid coordinates").to_dict()), 400
+
+            try:
+                lat = Decimal(lat_str)
+                lon = Decimal(lon_str)
+            except:
+                return jsonify(StatusResponse(400, "invalid coordinates").to_dict()), 400
+
+            result, err = self.controller.get_forecast(lat, lon)
+
+            if err:
+                return jsonify(StatusResponse(500, str(err)).to_dict()), 500
+
             return jsonify(SuccessResponse(200, "Success", result).to_dict()), 200
         except Exception as e:
             return jsonify(StatusResponse(500, str(e)).to_dict()), 500

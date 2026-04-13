@@ -25,6 +25,11 @@ weather_handler = WeatherHandler()
 def get_current_weather():
     return weather_handler.handle_get_current_weather()
 
+@app.route('/api/v1/forecast', methods=['GET'])
+def get_forecast():
+    return weather_handler.handle_get_forecast()
+
+
 @app.route('/swagger.json')
 def swagger():
     return {
@@ -40,6 +45,52 @@ def swagger():
                 "get": {
                     "summary": "Get Current Weather",
                     "description": "Returns current weather for given coordinates",
+                    "tags": ["weather"],
+                    "produces": ["application/json"],
+                    "parameters": [
+                        {
+                            "name": "lat",
+                            "in": "query",
+                            "type": "string",
+                            "required": True,
+                            "default": "18.300231990440125",
+                            "description": "Latitude"
+                        },
+                        {
+                            "name": "lon",
+                            "in": "query",
+                            "type": "string",
+                            "required": True,
+                            "default": "-64.8251590359234",
+                            "description": "Longitude"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "schema": {
+                                "$ref": "#/definitions/SuccessResponse"
+                            }
+                        },
+                        "400": {
+                            "description": "Bad Request",
+                            "schema": {
+                                "$ref": "#/definitions/StatusResponse"
+                            }
+                        },
+                        "500": {
+                            "description": "Internal Server Error",
+                            "schema": {
+                                "$ref": "#/definitions/StatusResponse"
+                            }
+                        }
+                    }
+                }
+            },
+            "/forecast": {
+                "get": {
+                    "summary": "Get Forecast",
+                    "description": "Returns forecast for given coordinates",
                     "tags": ["weather"],
                     "produces": ["application/json"],
                     "parameters": [
