@@ -6,6 +6,7 @@ from LB6.clients.openweather import OpenWeatherClient
 from LB6.controllers.weather import CurrentWeatherController
 from LB6.shared.responses.status import StatusResponse
 from LB6.shared.responses.success import SuccessResponse
+from LB6.shared.utils.city_coordinates import CityCoordinates
 from LB6.shared.utils.env import get_env
 
 
@@ -41,8 +42,17 @@ class WeatherHandler:
 
     def handle_get_forecast(self):
         try:
+            city = request.args.get('city')
             lat_str = request.args.get('lat')
             lon_str = request.args.get('lon')
+
+            if city:
+                if lat_str or lon_str:
+                    return jsonify(StatusResponse(400, "too many arguments").to_dict()), 400
+
+                lat_str, lon_str, err = CityCoordinates.resolve(city)
+                if err:
+                    return jsonify(StatusResponse(400, f"{str(err)}").to_dict()), 400
 
             if not lat_str or not lon_str:
                 return jsonify(StatusResponse(400, "invalid coordinates").to_dict()), 400

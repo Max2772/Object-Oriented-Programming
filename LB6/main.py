@@ -90,25 +90,39 @@ def swagger():
             "/forecast": {
                 "get": {
                     "summary": "Get Forecast",
-                    "description": "Returns forecast for given coordinates",
+                    "description": "Returns forecast for given coordinates OR city",
                     "tags": ["weather"],
                     "produces": ["application/json"],
                     "parameters": [
                         {
+                            "name": "city",
+                            "in": "query",
+                            "type": "string",
+                            "required": False,
+                            "enum": [
+                                "minsk",
+                                "london",
+                                "tokyo",
+                                "shanghai",
+                                "warsaw"
+                            ],
+                            "description": "City name (optional)"
+                        },
+                        {
                             "name": "lat",
                             "in": "query",
                             "type": "string",
-                            "required": True,
-                            "default": "18.300231990440125",
-                            "description": "Latitude"
+                            "required": False,
+                            "default": "53.9006",
+                            "description": "Latitude (required if city not provided)"
                         },
                         {
                             "name": "lon",
                             "in": "query",
                             "type": "string",
-                            "required": True,
-                            "default": "-64.8251590359234",
-                            "description": "Longitude"
+                            "required": False,
+                            "default": "27.5590",
+                            "description": "Longitude (required if city not provided)"
                         }
                     ],
                     "responses": {
