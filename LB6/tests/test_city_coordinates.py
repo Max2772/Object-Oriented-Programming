@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 from LB6.shared.utils.city_coordinates import CityCoordinates
 
 

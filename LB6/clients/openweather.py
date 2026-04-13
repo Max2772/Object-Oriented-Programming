@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 import requests
 from decimal import Decimal
 from LB6.clients.weather_data_client import WeatherDataClient
@@ -24,6 +26,15 @@ class OpenWeatherClient(WeatherDataClient):
             return Decimal('0'), Exception(f"failed to call openweather: {e}")
         except (KeyError, ValueError) as e:
             return Decimal('0'), Exception(f"failed to decode response: {e}")
+
+    def get_current_temperatures(self, locations: List[Tuple[Decimal, Decimal]]):
+        temps = []
+        for lat, lon in locations:
+            temp, err = self.location_current_temperature(lat, lon)
+            if err:
+                return [], err
+            temps.append(temp)
+        return temps, None
 
     def get_forecast(self, lat: Decimal, lon: Decimal):
         url = f"{self.base_url}/forecast?lat={lat}&lon={lon}&appid={self.api_key}&units=metric"

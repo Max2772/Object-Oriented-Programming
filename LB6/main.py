@@ -25,9 +25,13 @@ weather_handler = WeatherHandler()
 def get_current_weather():
     return weather_handler.handle_get_current_weather()
 
+@app.route('/api/v1/weather/multiple', methods=['GET'])
+def get_multiple_current_weather():
+    return weather_handler.handler_get_multiple_current_weather()
+
 @app.route('/api/v1/forecast', methods=['GET'])
 def get_forecast():
-    return weather_handler.handle_get_forecast()
+    return weather_handler.handler_get_forecast()
 
 
 @app.route('/swagger.json')
@@ -63,6 +67,44 @@ def swagger():
                             "required": True,
                             "default": "-64.8251590359234",
                             "description": "Longitude"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "schema": {
+                                "$ref": "#/definitions/SuccessResponse"
+                            }
+                        },
+                        "400": {
+                            "description": "Bad Request",
+                            "schema": {
+                                "$ref": "#/definitions/StatusResponse"
+                            }
+                        },
+                        "500": {
+                            "description": "Internal Server Error",
+                            "schema": {
+                                "$ref": "#/definitions/StatusResponse"
+                            }
+                        }
+                    }
+                }
+            },
+            "/weather/multiple": {
+                "get": {
+                    "summary": "Get Current Weather for Multiple Locations",
+                    "description": "Returns current weather for multiple coordinates. Pass coordinates as comma-separated values: lat1,lon1,lat2,lon2,...",
+                    "tags": ["weather"],
+                    "produces": ["application/json"],
+                    "parameters": [
+                        {
+                            "name": "cords",
+                            "in": "query",
+                            "type": "string",
+                            "required": True,
+                            "example": "53.9,27.56,51.5074,-0.1278",
+                            "description": "Comma-separated coordinates: lat1,lon1,lat2,lon2,... (must be even number of values)"
                         }
                     ],
                     "responses": {
