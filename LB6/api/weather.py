@@ -1,10 +1,10 @@
 from flask import request, jsonify
-from controllers.weather import CurrentWeatherController
-from clients.openweather import OpenWeatherClient
-from shared.utils.env import get_env
-from shared.responses.status import StatusResponse
-from shared.responses.success import SuccessResponse
-from models.weather.get import CurrentWeather
+from LB6.controllers.weather import CurrentWeatherController
+from LB6.clients.openweather import OpenWeatherClient
+from LB6.shared.utils.env import get_env
+from LB6.shared.responses.status import StatusResponse
+from LB6.shared.responses.success import SuccessResponse
+from LB6.models.weather.get import CurrentWeather
 from decimal import Decimal
 
 class WeatherHandler:

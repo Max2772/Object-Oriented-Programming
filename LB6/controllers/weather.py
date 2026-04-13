@@ -1,7 +1,7 @@
 from decimal import Decimal
 from typing import Tuple, Optional
-from clients.weather_data_client import WeatherDataClient
-from models.weather.get import CurrentWeather
+from LB6.clients.weather_data_client import WeatherDataClient
+from LB6.models.weather.get import CurrentWeather
 
 class CurrentWeatherController:
     def __init__(self, client: WeatherDataClient):

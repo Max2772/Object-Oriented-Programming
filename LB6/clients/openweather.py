@@ -1,7 +1,7 @@
 import json
 import requests
 from decimal import Decimal
-from clients.weather_data_client import WeatherDataClient
+from LB6.clients.weather_data_client import WeatherDataClient
 
 class OpenWeatherClient(WeatherDataClient):
     def __init__(self, api_key: str, base_url: str):
