@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-class CurrentWeather:
+class Weather:
     def __init__(self, temperature: Decimal):
         self.temperature = temperature
     
