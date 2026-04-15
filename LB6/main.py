@@ -23,7 +23,7 @@ weather_handler = WeatherHandler()
 
 @app.route('/api/v1/weather', methods=['GET'])
 def get_current_weather():
-    return weather_handler.handle_get_current_weather()
+    return weather_handler.handler_get_current_weather()
 
 @app.route('/api/v1/weather/multiple', methods=['GET'])
 def get_multiple_current_weather():
@@ -52,6 +52,18 @@ def swagger():
                     "tags": ["weather"],
                     "produces": ["application/json"],
                     "parameters": [
+                        {
+                            "name": "provider",
+                            "in": "query",
+                            "type": "string",
+                            "required": False,
+                            "enum": [
+                                "openweather",
+                                "googleweather"
+                            ],
+                            "default": "openweather",
+                            "description": "Weather provider API"
+                        },
                         {
                             "name": "lat",
                             "in": "query",
@@ -99,6 +111,18 @@ def swagger():
                     "produces": ["application/json"],
                     "parameters": [
                         {
+                            "name": "provider",
+                            "in": "query",
+                            "type": "string",
+                            "required": False,
+                            "enum": [
+                                "openweather",
+                                "googleweather"
+                            ],
+                            "default": "openweather",
+                            "description": "Weather provider API"
+                        },
+                        {
                             "name": "cords",
                             "in": "query",
                             "type": "string",
@@ -136,6 +160,18 @@ def swagger():
                     "tags": ["weather"],
                     "produces": ["application/json"],
                     "parameters": [
+                        {
+                            "name": "provider",
+                            "in": "query",
+                            "type": "string",
+                            "required": False,
+                            "enum": [
+                                "openweather",
+                                "googleweather"
+                            ],
+                            "default": "openweather",
+                            "description": "Weather provider API"
+                        },
                         {
                             "name": "city",
                             "in": "query",
@@ -218,4 +254,8 @@ def swagger():
     }
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=8080)
+    app.run(
+        debug=True,
+        host='0.0.0.0',
+        port=8080
+    )

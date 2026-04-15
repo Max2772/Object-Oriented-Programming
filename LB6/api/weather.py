@@ -1,25 +1,40 @@
 from decimal import Decimal
-from typing import List, Tuple
 
 from flask import request, jsonify
 
-from LB6.clients.openweather import OpenWeatherClient
+from LB6.clients.google_weather import GoogleWeatherClient
+from LB6.clients.open_weather import OpenWeatherClient
 from LB6.controllers.weather import WeatherController
 from LB6.shared.responses.status import StatusResponse
 from LB6.shared.responses.success import SuccessResponse
 from LB6.shared.utils.city_coordinates import CityCoordinates
 from LB6.shared.utils.env import get_env
+from LB6.types.enums.weather_api import WeatherAPI
 
 
 class WeatherHandler:
     def __init__(self):
-        api_key = get_env("OPENWEATHER_API_KEY", "")
-        base_url = get_env("OPENWEATHER_BASE_URL", "")
-        client = OpenWeatherClient(api_key, base_url)
-        self.controller = WeatherController(client)
+        self.open_weather_key = get_env("OPENWEATHER_API_KEY", "")
+        self.open_weather_url = get_env("OPENWEATHER_BASE_URL", "")
+        self.google_weather_key = get_env("GOOGLE_WEATHER_API_KEY", "")
+        self.google_weather_url = get_env("GOOGLE_BASE_URL", "")
+
+    def _get_client(self, provider: WeatherAPI):
+        if provider == WeatherAPI.GOOGLE_WEATHER:
+            if not self.google_weather_key:
+                raise ValueError("GOOGLE_WEATHER_API_KEY is not set")
+            return GoogleWeatherClient(self.google_weather_key, self.google_weather_url)
+        elif provider == WeatherAPI.OPEN_WEATHER:
+            if not self.open_weather_key:
+                raise ValueError("OPENWEATHER_API_KEY is not set")
+            return OpenWeatherClient(self.open_weather_key, self.open_weather_url)
+        else:
+            raise ValueError("Unknown provider")
 
     def handler_get_current_weather(self):
         try:
+            provider = WeatherAPI(request.args.get('provider', WeatherAPI.OPEN_WEATHER.value))
+
             lat_str = request.args.get("lat")
             lon_str = request.args.get("lon")
 
@@ -32,7 +47,9 @@ class WeatherHandler:
             except:
                 return jsonify(StatusResponse(400, "invalid coordinates").to_dict()), 400
 
-            result, err = self.controller.get_current_weather(lat, lon)
+            client = self._get_client(provider)
+            controller = WeatherController(client)
+            result, err = controller.get_current_weather(lat, lon)
 
             if err:
                 return jsonify(StatusResponse(500, str(err)).to_dict()), 500
@@ -43,6 +60,8 @@ class WeatherHandler:
 
     def handler_get_multiple_current_weather(self):
         try:
+            provider = WeatherAPI(request.args.get('provider', WeatherAPI.OPEN_WEATHER.value))
+
             raw = request.args.get("cords")
             cords_str = raw.split(",")
             if len(cords_str) % 2 != 0:
@@ -59,7 +78,9 @@ class WeatherHandler:
             for lat, lon in zip(cords[::2], cords[1::2]):
                 locations.append([lat, lon])
 
-            result, err = self.controller.get_current_temperatures(locations)
+            client = self._get_client(provider)
+            controller = WeatherController(client)
+            result, err = controller.get_current_temperatures(locations)
             if err:
                 return jsonify(StatusResponse(400, str(err)).to_dict()), 400
 
@@ -70,6 +91,8 @@ class WeatherHandler:
 
     def handler_get_forecast(self):
         try:
+            provider = WeatherAPI(request.args.get('provider', WeatherAPI.OPEN_WEATHER.value))
+
             city = request.args.get("city")
             lat_str = request.args.get("lat")
             lon_str = request.args.get("lon")
@@ -91,7 +114,9 @@ class WeatherHandler:
             except:
                 return jsonify(StatusResponse(400, "invalid coordinates").to_dict()), 400
 
-            result, err = self.controller.get_forecast(lat, lon)
+            client = self._get_client(provider)
+            controller = WeatherController(client)
+            result, err = controller.get_forecast(lat, lon)
 
             if err:
                 return jsonify(StatusResponse(500, str(err)).to_dict()), 500
