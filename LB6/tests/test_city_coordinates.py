@@ -3,7 +3,7 @@ from decimal import Decimal
 from LB6.shared.utils.city_coordinates import CityCoordinates
 
 
-def test_resolve_known_city_english():
+def test_resolve_known_city():
     lat, lon, err = CityCoordinates.resolve("London")
     assert err is None
     assert isinstance(lat, Decimal)

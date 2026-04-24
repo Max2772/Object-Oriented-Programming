@@ -11,7 +11,7 @@ class GoogleWeatherClient(WeatherDataClient):
         self.api_key = api_key
         self.base_url = base_url
 
-    def location_current_temperature(self, lat: Decimal, lon: Decimal) -> Tuple[Decimal, Optional[Exception]]:
+    def get_current_weather(self, lat: Decimal, lon: Decimal) -> Tuple[Decimal, Optional[Exception]]:
         url = f"{self.base_url}/currentConditions:lookup?key={self.api_key}&location.latitude={lat}&location.longitude={lon}"
 
         try:
@@ -27,10 +27,10 @@ class GoogleWeatherClient(WeatherDataClient):
         except (KeyError, ValueError, TypeError) as e:
             return Decimal('0'), Exception(f"failed to decode google response: {e}")
 
-    def get_current_temperatures(self, locations: List[Tuple[Decimal, Decimal]]) -> Tuple[List[Decimal], Optional[Exception]]:
+    def get_current_weathers(self, locations: List[Tuple[Decimal, Decimal]]) -> Tuple[List[Decimal], Optional[Exception]]:
         temps = []
         for lat, lon in locations:
-            temp, err = self.location_current_temperature(lat, lon)
+            temp, err = self.get_current_weather(lat, lon)
             if err:
                 return [], err
             temps.append(temp)

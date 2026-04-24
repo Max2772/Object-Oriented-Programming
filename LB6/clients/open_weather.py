@@ -11,7 +11,7 @@ class OpenWeatherClient(WeatherDataClient):
         self.api_key = api_key
         self.base_url = base_url
     
-    def location_current_temperature(self, lat: Decimal, lon: Decimal):
+    def get_current_weather(self, lat: Decimal, lon: Decimal):
         url = f"{self.base_url}/weather?lat={lat}&lon={lon}&appid={self.api_key}&units=metric"
         
         try:
@@ -27,10 +27,10 @@ class OpenWeatherClient(WeatherDataClient):
         except (KeyError, ValueError) as e:
             return Decimal('0'), Exception(f"failed to decode response: {e}")
 
-    def get_current_temperatures(self, locations: List[Tuple[Decimal, Decimal]]) -> Tuple[List[Decimal], Optional[Exception]]:
+    def get_current_weathers(self, locations: List[Tuple[Decimal, Decimal]]) -> Tuple[List[Decimal], Optional[Exception]]:
         temps = []
         for lat, lon in locations:
-            temp, err = self.location_current_temperature(lat, lon)
+            temp, err = self.get_current_weather(lat, lon)
             if err:
                 return [], err
             temps.append(temp)
