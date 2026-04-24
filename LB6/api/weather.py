@@ -38,20 +38,20 @@ class WeatherHandler:
             return None, StatusResponse(400, "invalid provider")
 
     def _resolve_multiple_coordinates(self):
-        raw_cords = request.args.get("cords")
-        if not raw_cords:
+        raw_coords = request.args.get("coords")
+        if not raw_coords:
             return None, StatusResponse(400, "empty coordinates parameter")
 
-        cords_str = raw_cords.split(",")
-        if len(cords_str) % 2 != 0:
+        coords_str = raw_coords.split(",")
+        if len(coords_str) % 2 != 0:
             return None, StatusResponse(400, "even amount of coordinates required")
 
         try:
-            cords = [Decimal(cord) for cord in cords_str]
+            coords = [Decimal(coord) for coord in coords_str]
         except:
             return None, StatusResponse(400, "invalid coordinates")
 
-        locations = [[lat, lon] for lat, lon in zip(cords[::2], cords[1::2])]
+        locations = [[lat, lon] for lat, lon in zip(coords[::2], coords[1::2])]
         return locations, None
 
 
