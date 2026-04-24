@@ -127,7 +127,7 @@ def swagger():
                             "in": "query",
                             "type": "string",
                             "required": True,
-                            "example": "53.9,27.56,51.5074,-0.1278",
+                            "default": "53.9,27.56,51.5074,-0.1278",
                             "description": "Comma-separated coordinates: lat1,lon1,lat2,lon2,... (must be even number of values)"
                         }
                     ],
