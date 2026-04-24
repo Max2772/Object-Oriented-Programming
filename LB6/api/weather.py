@@ -9,7 +9,7 @@ from LB6.shared.responses.status import StatusResponse
 from LB6.shared.responses.success import SuccessResponse
 from LB6.shared.utils.city_coordinates import CityCoordinates
 from LB6.shared.utils.env import get_env
-from LB6.types.enums.weather_api import WeatherAPI
+from LB6.shared.enums.weather_api import WeatherAPI
 
 
 class WeatherHandler:
@@ -94,7 +94,7 @@ class WeatherHandler:
             result, err = controller.get_current_weather(lat, lon)
 
             if err:
-                return jsonify(StatusResponse(500, str(err)).to_dict()), 500
+                return jsonify(StatusResponse(400, str(err)).to_dict()), 400
 
             return jsonify(SuccessResponse(200, "success", result).to_dict()), 200
         except Exception as e:
@@ -134,7 +134,7 @@ class WeatherHandler:
 
             client = self._get_client(provider)
             controller = WeatherController(client)
-            result, err = controller.get_current_temperatures(locations)
+            result, err = controller.get_multiple_weather(locations)
             if err:
                 return jsonify(StatusResponse(400, str(err)).to_dict()), 400
 
@@ -142,3 +142,7 @@ class WeatherHandler:
             return jsonify(SuccessResponse(200, "success", data).to_dict()), 200
         except Exception as e:
             return jsonify(StatusResponse(500, str(e)).to_dict()), 500
+
+    def handler_get_all_cities(self):
+            data = CityCoordinates.get_cities_list()
+            return jsonify(SuccessResponse(200, "success", data).to_dict()), 200

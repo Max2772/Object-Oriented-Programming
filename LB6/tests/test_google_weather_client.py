@@ -48,7 +48,7 @@ def test_get_current_temperatures_success(mock_get, controller):
     mock_get.return_value.json.return_value = {'temperature': {'degrees': 25.5}}
 
     locations = [(Decimal('53.9'), Decimal('27.56')), (Decimal('51.5'), Decimal('-0.12'))]
-    result, err = controller.get_current_temperatures(locations)
+    result, err = controller.get_multiple_weather(locations)
 
     assert err is None
     assert len(result) == 2
@@ -60,7 +60,7 @@ def test_get_current_temperatures_error(mock_get, controller):
     mock_get.return_value.status_code = 401
 
     locations = [(Decimal('53.9'), Decimal('27.56')), (Decimal('51.5'), Decimal('-0.12'))]
-    result, err = controller.get_current_temperatures(locations)
+    result, err = controller.get_multiple_weather(locations)
 
     assert err is not None
     assert len(result) == 0

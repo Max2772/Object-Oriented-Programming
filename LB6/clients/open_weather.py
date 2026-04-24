@@ -42,7 +42,7 @@ class OpenWeatherClient(WeatherDataClient):
         try:
             resp = requests.get(url)
             if resp.status_code != 200:
-                return Forecast([]), Exception(f"openweather forecast returned bad status: {resp.status_code}")
+                return Forecast([]), Exception(f"openweather returned bad status: {resp.status_code}")
             data = resp.json()
             forecasts = data.get('list', [])
             temps = []

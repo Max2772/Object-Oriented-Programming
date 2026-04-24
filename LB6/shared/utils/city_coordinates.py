@@ -11,6 +11,10 @@ class CityCoordinates:
         "warsaw": (Decimal("52.2297"), Decimal("21.0122")),
     }
 
+    @classmethod
+    def get_cities_list(cls) -> list[str]:
+        return list(cls._CITIES.keys())
+
     @staticmethod
     def resolve(city: str) -> Tuple[Decimal, Decimal, Optional[Exception]]:
         if not city:

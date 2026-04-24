@@ -15,7 +15,7 @@ class WeatherController:
         
         return Weather(temperature), None
 
-    def get_current_temperatures(self, locations: List[Tuple[Decimal, Decimal]]) -> Tuple[List[Weather], Optional[Exception]]:
+    def get_multiple_weather(self, locations: List[Tuple[Decimal, Decimal]]) -> Tuple[List[Weather], Optional[Exception]]:
         temps, err = self.client.get_current_temperatures(locations)
         if err:
             return [], err

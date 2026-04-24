@@ -1,6 +1,9 @@
+from dotenv import load_dotenv
 from flask import Flask
 from flask_swagger_ui import get_swaggerui_blueprint
-from dotenv import load_dotenv
+
+from LB6.shared.swagger.parameters import PROVIDER_PARAM, CITY_PARAM, LAT_PARAM, LON_PARAM
+from LB6.shared.utils.city_coordinates import CityCoordinates
 from api.weather import WeatherHandler
 
 load_dotenv()
@@ -8,78 +11,64 @@ load_dotenv()
 app = Flask(__name__)
 
 # Swagger UI configuration
-SWAGGER_URL = '/swagger'
-API_URL = '/swagger.json'
+SWAGGER_URL = "/swagger"
+API_URL = "/swagger.json"
+API_PREFIX = "/api/v1"
+
 swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
     API_URL,
     config={
-        'app_name': "Weather Example API"
+        "app_name": "Weather Example API"
     }
 )
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
 weather_handler = WeatherHandler()
 
-@app.route('/api/v1/weather', methods=['GET'])
+
+@app.route(f"{API_PREFIX}/weather", methods=["GET"])
 def get_current_weather():
     return weather_handler.handler_get_current_weather()
 
-@app.route('/api/v1/weather/multiple', methods=['GET'])
+
+@app.route(f"{API_PREFIX}/weather/multiple", methods=["GET"])
 def get_multiple_current_weather():
     return weather_handler.handler_get_multiple_current_weather()
 
-@app.route('/api/v1/forecast', methods=['GET'])
+
+@app.route(f"{API_PREFIX}/forecast", methods=["GET"])
 def get_forecast():
     return weather_handler.handler_get_forecast()
 
 
-@app.route('/swagger.json')
+@app.route(f"{API_PREFIX}/cities", methods=["GET"])
+def get_all_cities():
+    return weather_handler.handler_get_all_cities()
+
+
+@app.route("/swagger.json")
 def swagger():
     return {
         "swagger": "2.0",
         "info": {
             "title": "Weather Example API",
             "version": "1.0",
-            "description": ""
+            "description": "Weather API for LB6 (OOP)"
         },
-        "basePath": "/api/v1",
+        "basePath": f"{API_PREFIX}",
         "paths": {
             "/weather": {
                 "get": {
                     "summary": "Get Current Weather",
-                    "description": "Returns current weather for given coordinates",
+                    "description": "Returns current weather for given coordinates or city",
                     "tags": ["weather"],
                     "produces": ["application/json"],
                     "parameters": [
-                        {
-                            "name": "provider",
-                            "in": "query",
-                            "type": "string",
-                            "required": False,
-                            "enum": [
-                                "openweather",
-                                "googleweather"
-                            ],
-                            "default": "openweather",
-                            "description": "Weather provider API"
-                        },
-                        {
-                            "name": "lat",
-                            "in": "query",
-                            "type": "string",
-                            "required": True,
-                            "default": "18.300231990440125",
-                            "description": "Latitude"
-                        },
-                        {
-                            "name": "lon",
-                            "in": "query",
-                            "type": "string",
-                            "required": True,
-                            "default": "-64.8251590359234",
-                            "description": "Longitude"
-                        }
+                        PROVIDER_PARAM,
+                        CITY_PARAM,
+                        LAT_PARAM,
+                        LON_PARAM,
                     ],
                     "responses": {
                         "200": {
@@ -110,18 +99,7 @@ def swagger():
                     "tags": ["weather"],
                     "produces": ["application/json"],
                     "parameters": [
-                        {
-                            "name": "provider",
-                            "in": "query",
-                            "type": "string",
-                            "required": False,
-                            "enum": [
-                                "openweather",
-                                "googleweather"
-                            ],
-                            "default": "openweather",
-                            "description": "Weather provider API"
-                        },
+                        PROVIDER_PARAM,
                         {
                             "name": "cords",
                             "in": "query",
@@ -160,48 +138,10 @@ def swagger():
                     "tags": ["weather"],
                     "produces": ["application/json"],
                     "parameters": [
-                        {
-                            "name": "provider",
-                            "in": "query",
-                            "type": "string",
-                            "required": False,
-                            "enum": [
-                                "openweather",
-                                "googleweather"
-                            ],
-                            "default": "openweather",
-                            "description": "Weather provider API"
-                        },
-                        {
-                            "name": "city",
-                            "in": "query",
-                            "type": "string",
-                            "required": False,
-                            "enum": [
-                                "minsk",
-                                "london",
-                                "tokyo",
-                                "shanghai",
-                                "warsaw"
-                            ],
-                            "description": "City name (optional)"
-                        },
-                        {
-                            "name": "lat",
-                            "in": "query",
-                            "type": "string",
-                            "required": False,
-                            "default": "53.9006",
-                            "description": "Latitude (required if city not provided)"
-                        },
-                        {
-                            "name": "lon",
-                            "in": "query",
-                            "type": "string",
-                            "required": False,
-                            "default": "27.5590",
-                            "description": "Longitude (required if city not provided)"
-                        }
+                        PROVIDER_PARAM,
+                        CITY_PARAM,
+                        LAT_PARAM,
+                        LON_PARAM,
                     ],
                     "responses": {
                         "200": {
@@ -214,6 +154,28 @@ def swagger():
                             "description": "Bad Request",
                             "schema": {
                                 "$ref": "#/definitions/StatusResponse"
+                            }
+                        },
+                        "500": {
+                            "description": "Internal Server Error",
+                            "schema": {
+                                "$ref": "#/definitions/StatusResponse"
+                            }
+                        }
+                    }
+                }
+            },
+            "/cities": {
+                "get": {
+                    "summary": "Get All Cities",
+                    "description": "Returns list of supported cities",
+                    "tags": ["info"],
+                    "produces": ["application/json"],
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "schema": {
+                                "$ref": "#/definitions/SuccessResponse"
                             }
                         },
                         "500": {
@@ -240,22 +202,34 @@ def swagger():
                     "code": {"type": "integer"},
                     "message": {"type": "string"},
                     "data": {
-                        "$ref": "#/definitions/CurrentWeather"
+                        "type": "object"
                     }
                 }
             },
-            "CurrentWeather": {
+            "Weather": {
                 "type": "object",
                 "properties": {
                     "temperature": {"type": "number"}
+                }
+            },
+            "Forecast": {
+                "type": "object",
+                "properties": {
+                    "daily_max_temps": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    }
                 }
             }
         }
     }
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(
         debug=True,
-        host='0.0.0.0',
+        host="0.0.0.0",
         port=8080
     )

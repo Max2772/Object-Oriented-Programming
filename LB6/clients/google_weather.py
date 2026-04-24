@@ -42,7 +42,7 @@ class GoogleWeatherClient(WeatherDataClient):
         try:
             resp = requests.get(url)
             if resp.status_code != 200:
-                return Forecast([]), Exception(f"google weather forecast returned bad status: {resp.status_code}")
+                return Forecast([]), Exception(f"google weather returned bad status: {resp.status_code}")
             data = resp.json()
             temps = []
             for day in data.get('forecastDays', [])[:5]:
