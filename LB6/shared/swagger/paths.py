@@ -1,4 +1,4 @@
-from LB6.shared.swagger.parameters import PROVIDER_PARAM, CITY_PARAM, LAT_PARAM, LON_PARAM
+from LB6.shared.swagger.parameters import PROVIDER_PARAM, CITY_PARAM, LAT_PARAM, LON_PARAM, CITIES_PARAM
 
 PATHS = {
     "/weather": {
@@ -38,16 +38,17 @@ PATHS = {
     "/weather/multiple": {
         "get": {
             "summary": "Get Current Weather for Multiple Locations",
-            "description": "Returns current weather for multiple coordinates. Pass coordinates as comma-separated values: lat1,lon1,lat2,lon2,...",
+            "description": "Returns current weather for multiple coordinates. \nPass cities or coordinates as comma-separated values: city1, city2, city3... or lat1,lon1,lat2,lon2,...",
             "tags": ["weather"],
             "produces": ["application/json"],
             "parameters": [
                 PROVIDER_PARAM,
+                CITIES_PARAM,
                 {
                     "name": "coords",
                     "in": "query",
                     "type": "string",
-                    "required": True,
+                    "required": False,
                     "default": "53.9,27.56,51.5074,-0.1278",
                     "description": "Comma-separated coordinates: lat1,lon1,lat2,lon2,... (must be even number of values)"
                 }

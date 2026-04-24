@@ -43,31 +43,6 @@ def test_get_current_weather_api_error(mock_get, controller):
 
 
 @patch('requests.get')
-def test_get_current_weathers_success(mock_get, controller):
-    mock_get.return_value.status_code = 200
-    mock_get.return_value.json.return_value = {'temperature': {'degrees': 25.5}}
-
-    locations = [(Decimal('53.9'), Decimal('27.56')), (Decimal('51.5'), Decimal('-0.12'))]
-    result, err = controller.get_multiple_weather(locations)
-
-    assert err is None
-    assert len(result) == 2
-    assert all(isinstance(r, Weather) for r in result)
-
-
-@patch('requests.get')
-def test_get_current_weathers_error(mock_get, controller):
-    mock_get.return_value.status_code = 401
-
-    locations = [(Decimal('53.9'), Decimal('27.56')), (Decimal('51.5'), Decimal('-0.12'))]
-    result, err = controller.get_multiple_weather(locations)
-
-    assert err is not None
-    assert len(result) == 0
-    assert all(isinstance(r, Weather) for r in result)
-
-
-@patch('requests.get')
 def test_get_forecast_success(mock_get, controller):
     mock_get.return_value.status_code = 200
     mock_get.return_value.json.return_value = {'forecastDays': [
@@ -91,3 +66,28 @@ def test_get_forecast_error(mock_get, controller):
 
     assert err is not None
     assert "bad status" in str(err)
+
+
+@patch('requests.get')
+def test_get_current_weathers_success(mock_get, controller):
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = {'temperature': {'degrees': 25.5}}
+
+    locations = [(Decimal('53.9'), Decimal('27.56')), (Decimal('51.5'), Decimal('-0.12'))]
+    result, err = controller.get_multiple_weather(locations)
+
+    assert err is None
+    assert len(result) == 2
+    assert all(isinstance(r, Weather) for r in result)
+
+
+@patch('requests.get')
+def test_get_current_weathers_error(mock_get, controller):
+    mock_get.return_value.status_code = 401
+
+    locations = [(Decimal('53.9'), Decimal('27.56')), (Decimal('51.5'), Decimal('-0.12'))]
+    result, err = controller.get_multiple_weather(locations)
+
+    assert err is not None
+    assert len(result) == 0
+    assert all(isinstance(r, Weather) for r in result)

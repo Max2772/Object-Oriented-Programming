@@ -44,9 +44,25 @@ class WeatherHandler:
             return None, StatusResponse(400, "invalid provider")
 
     def _resolve_multiple_coordinates(self):
+        raw_cities = request.args.get("cities")
         raw_coords = request.args.get("coords")
+
+        if raw_cities:
+            if raw_coords:
+                return None, StatusResponse(400, "too many arguments")
+
+            cities = [c.strip().lower() for c in raw_cities.split(",")]
+            locations = []
+            for city in cities:
+                lat, lon, err = CityCoordinates.resolve(city)
+                if err:
+                    return None, StatusResponse(400, f"invalid city: {city}")
+                locations.append([lat, lon])
+
+            return locations, None
+
         if not raw_coords:
-            return None, StatusResponse(400, "empty coordinates parameter")
+            return None, StatusResponse(400, "not enough arguments")
 
         coords_str = raw_coords.split(",")
         if len(coords_str) % 2 != 0:

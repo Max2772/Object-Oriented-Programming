@@ -20,6 +20,15 @@ CITY_PARAM = {
     "description": "City name (optional)"
 }
 
+CITIES_PARAM = {
+    "name": "cities",
+    "in": "query",
+    "type": "string",
+    "required": False,
+    "example": "minsk,london,tokyo",
+    "description": f"Comma-separated city names. Available: {CityCoordinates.get_cities_list()}"
+}
+
 LAT_PARAM = {
     "name": "lat",
     "in": "query",
