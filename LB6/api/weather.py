@@ -5,11 +5,12 @@ from flask import request, jsonify
 from LB6.clients.google_weather import GoogleWeatherClient
 from LB6.clients.open_weather import OpenWeatherClient
 from LB6.controllers.weather import WeatherController
+from LB6.shared.enums.weather_api import WeatherAPI
 from LB6.shared.responses.status import StatusResponse
 from LB6.shared.responses.success import SuccessResponse
 from LB6.shared.utils.city_coordinates import CityCoordinates
+from LB6.shared.utils.coordinates_validator import validate_lat_lon
 from LB6.shared.utils.env import get_env
-from LB6.shared.enums.weather_api import WeatherAPI
 
 
 class WeatherHandler:
@@ -33,7 +34,12 @@ class WeatherHandler:
 
     def _resolve_provider(self):
         try:
-            return WeatherAPI(request.args.get("provider", WeatherAPI.OPEN_WEATHER)), None
+            raw_provider = request.args.get("provider")
+            if not raw_provider:
+                return None, StatusResponse(400, "provider argument required")
+
+            provider = WeatherAPI(raw_provider.lower())
+            return provider, None
         except ValueError:
             return None, StatusResponse(400, "invalid provider")
 
@@ -51,9 +57,14 @@ class WeatherHandler:
         except:
             return None, StatusResponse(400, "invalid coordinates")
 
-        locations = [[lat, lon] for lat, lon in zip(coords[::2], coords[1::2])]
-        return locations, None
+        locations = []
+        for lat, lon in zip(coords[::2], coords[1::2]):
+            err = validate_lat_lon(lat, lon)
+            if err:
+                return None, StatusResponse(400, err)
+            locations.append([lat, lon])
 
+        return locations, None
 
     def _resolve_coordinates(self):
         city = request.args.get("city")
@@ -64,9 +75,10 @@ class WeatherHandler:
             if lat_str or lon_str:
                 return None, None, StatusResponse(400, "too many arguments")
 
-            lat_str, lon_str, err = CityCoordinates.resolve(city)
+            lat, lon, err = CityCoordinates.resolve(city)
             if err:
                 return None, None, StatusResponse(400, str(err))
+            return lat, lon, None
 
         if not lat_str or not lon_str:
             return None, None, StatusResponse(400, "not enough arguments")
@@ -76,6 +88,10 @@ class WeatherHandler:
             lon = Decimal(lon_str)
         except:
             return None, None, StatusResponse(400, "invalid coordinates")
+
+        err = validate_lat_lon(lat, lon)
+        if err:
+            return None, None, StatusResponse(400, err)
 
         return lat, lon, None
 
@@ -121,7 +137,6 @@ class WeatherHandler:
         except Exception as e:
             return jsonify(StatusResponse(500, str(e)).to_dict()), 500
 
-
     def handler_get_multiple_current_weather(self):
         try:
             provider, err_response = self._resolve_provider()
@@ -144,5 +159,5 @@ class WeatherHandler:
             return jsonify(StatusResponse(500, str(e)).to_dict()), 500
 
     def handler_get_all_cities(self):
-            data = CityCoordinates.get_cities_list()
-            return jsonify(SuccessResponse(200, "success", data).to_dict()), 200
+        data = CityCoordinates.get_cities_list()
+        return jsonify(SuccessResponse(200, "success", data).to_dict()), 200
