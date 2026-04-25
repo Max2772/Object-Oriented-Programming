@@ -3,7 +3,7 @@ from flask import Flask
 
 from LB6.shared.config import API_PREFIX, SWAGGER_URL
 from LB6.shared.swagger.builder import build_swagger, swaggerui_blueprint
-from api.weather import WeatherHandler
+from LB6.api.weather import WeatherHandler
 
 load_dotenv()
 
