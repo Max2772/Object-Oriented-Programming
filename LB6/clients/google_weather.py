@@ -36,11 +36,20 @@ class GoogleWeatherClient(WeatherDataClient):
             if resp.status_code != 200:
                 return Forecast([]), Exception(f"google weather returned bad status: {resp.status_code}")
             data = resp.json()
+
+            days = data.get('forecastDays', [])[:5]
+            if not days:
+                return Forecast([]), Exception("bad data from googleweather")
+
             temps = []
-            for day in data.get('forecastDays', [])[:5]:
-                if 'maxTemperature' in day:
-                    temp = Decimal(str(day['maxTemperature']['degrees']))
-                    temps.append(temp)
+            for day in days:
+                max_temp = day.get('maxTemperature')
+                if not max_temp or 'degrees' not in max_temp:
+                    return Forecast([]), Exception("bad data from googleweather")
+
+                temps.append(Decimal(str(max_temp['degrees'])))
             return Forecast(temps), None
+        except (KeyError, ValueError) as e:
+            return Forecast([]), Exception(f"failed to decode response: {e}")
         except Exception as e:
             return Forecast([]), Exception(f"failed to get google forecast: {e}")
