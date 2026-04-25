@@ -11,9 +11,5 @@ class WeatherDataClient(ABC):
         pass
 
     @abstractmethod
-    def get_current_weathers(self, locations: List[Tuple[Decimal, Decimal]]) -> Tuple[List[Decimal], Optional[Exception]]:
-        pass
-
-    @abstractmethod
     def get_forecast(self, lat: Decimal, lon: Decimal) -> Tuple[Forecast, Optional[Exception]]:
         pass

@@ -1,6 +1,7 @@
-import requests
 from decimal import Decimal
-from typing import List, Tuple, Optional
+from typing import Tuple, Optional
+
+import requests
 
 from LB6.clients.weather_data_client import WeatherDataClient
 from LB6.models.forecast.get import Forecast
@@ -26,15 +27,6 @@ class GoogleWeatherClient(WeatherDataClient):
             return Decimal('0'), Exception(f"failed to call google weather: {e}")
         except (KeyError, ValueError, TypeError) as e:
             return Decimal('0'), Exception(f"failed to decode google response: {e}")
-
-    def get_current_weathers(self, locations: List[Tuple[Decimal, Decimal]]) -> Tuple[List[Decimal], Optional[Exception]]:
-        temps = []
-        for lat, lon in locations:
-            temp, err = self.get_current_weather(lat, lon)
-            if err:
-                return [], err
-            temps.append(temp)
-        return temps, None
 
     def get_forecast(self, lat: Decimal, lon: Decimal) -> Tuple[Forecast, Optional[Exception]]:
         url = f"{self.base_url}/forecast/days:lookup?key={self.api_key}&location.latitude={lat}&location.longitude={lon}&days=5"

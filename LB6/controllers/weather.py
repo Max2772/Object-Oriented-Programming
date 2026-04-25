@@ -27,7 +27,11 @@ class WeatherController:
             self,
             locations: List[Tuple[Decimal, Decimal]]
     ) -> Tuple[List[Weather], Optional[Exception]]:
-        temps, err = self.client.get_current_weathers(locations)
-        if err:
-            return [], err
-        return [Weather(t) for t in temps], None
+        temps = []
+        for lat, lon in locations:
+            temp, err = self.get_current_weather(lat, lon)
+            if err:
+                return [], err
+            temps.append(temp)
+
+        return temps, None
