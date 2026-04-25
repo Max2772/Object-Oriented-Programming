@@ -9,7 +9,6 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# Swagger UI configuration
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
 weather_handler = WeatherHandler()

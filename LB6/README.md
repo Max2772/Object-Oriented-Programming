@@ -12,4 +12,6 @@
 ```
 OPENWEATHER_API_KEY=xxxxxxxxxxxxxxxxx
 OPENWEATHER_BASE_URL=https://api.openweathermap.org/data/2.5/weather
+GOOGLE_WEATHER_API_KEY=xxxxxxxxxxxxxxxxx
+GOOGLE_BASE_URL=https://weather.googleapis.com/v1
 ```
