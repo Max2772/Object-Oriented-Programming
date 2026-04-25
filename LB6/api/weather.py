@@ -147,7 +147,7 @@ class WeatherHandler:
             result, err = controller.get_forecast(lat, lon)
 
             if err:
-                return jsonify(StatusResponse(500, str(err)).to_dict()), 500
+                return jsonify(StatusResponse(400, str(err)).to_dict()), 400
 
             return jsonify(SuccessResponse(200, "success", result).to_dict()), 200
         except Exception as e:
