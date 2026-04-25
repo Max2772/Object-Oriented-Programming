@@ -9,7 +9,7 @@ from LB6.shared.enums.weather_api import WeatherAPI
 from LB6.shared.responses.status import StatusResponse
 from LB6.shared.responses.success import SuccessResponse
 from LB6.shared.utils.city_coordinates import CityCoordinates
-from LB6.shared.utils.coordinates_validator import validate_lat_lon
+from LB6.shared.utils.coordinates_validator import valid_lat_lon
 from LB6.shared.utils.env import get_env
 
 
@@ -75,9 +75,9 @@ class WeatherHandler:
 
         locations = []
         for lat, lon in zip(coords[::2], coords[1::2]):
-            err = validate_lat_lon(lat, lon)
-            if err:
-                return None, StatusResponse(400, err)
+            correct, err_msg = valid_lat_lon(lat, lon)
+            if not correct:
+                return None, StatusResponse(400, err_msg)
             locations.append([lat, lon])
 
         return locations, None
@@ -105,9 +105,9 @@ class WeatherHandler:
         except:
             return None, None, StatusResponse(400, "invalid coordinates")
 
-        err = validate_lat_lon(lat, lon)
-        if err:
-            return None, None, StatusResponse(400, err)
+        correct, err_msg = valid_lat_lon(lat, lon)
+        if not correct:
+            return None, None, StatusResponse(400, err_msg)
 
         return lat, lon, None
 
