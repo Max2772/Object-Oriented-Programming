@@ -7,6 +7,7 @@ from LB6.clients.google_weather import GoogleWeatherClient
 from LB6.controllers.weather import WeatherController
 from LB6.models.forecast.get import Forecast
 from LB6.models.weather.get import Weather
+from LB6.shared.utils.city_coordinates import CityCoordinates
 
 
 @pytest.fixture
@@ -69,7 +70,7 @@ def test_get_forecast_error(mock_get, controller):
 
 
 @patch('requests.get')
-def test_get_current_weathers_success(mock_get, controller):
+def test_get_current_weathers_coords_success(mock_get, controller):
     mock_get.return_value.status_code = 200
     mock_get.return_value.json.return_value = {'temperature': {'degrees': 25.5}}
 
@@ -82,10 +83,49 @@ def test_get_current_weathers_success(mock_get, controller):
 
 
 @patch('requests.get')
-def test_get_current_weathers_error(mock_get, controller):
+def test_get_current_weathers_coords_error(mock_get, controller):
     mock_get.return_value.status_code = 401
 
     locations = [(Decimal('53.9'), Decimal('27.56')), (Decimal('51.5'), Decimal('-0.12'))]
+    result, err = controller.get_multiple_weather(locations)
+
+    assert err is not None
+    assert len(result) == 0
+    assert all(isinstance(r, Weather) for r in result)
+
+
+@patch('requests.get')
+def test_get_current_weathers_cities_success(mock_get, controller):
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = {'temperature': {'degrees': 25.5}}
+
+    cities = ["minsk", "london"]
+
+    locations = []
+    for city in cities:
+        lat, lon, err = CityCoordinates.resolve(city)
+        assert err is None
+        locations.append((lat, lon))
+
+    result, err = controller.get_multiple_weather(locations)
+
+    assert err is None
+    assert len(result) == 2
+    assert all(isinstance(r, Weather) for r in result)
+
+
+@patch('requests.get')
+def test_get_current_weathers_cities_error(mock_get, controller):
+    mock_get.return_value.status_code = 401
+
+    cities = ["minsk", "london"]
+
+    locations = []
+    for city in cities:
+        lat, lon, err = CityCoordinates.resolve(city)
+        assert err is None
+        locations.append((lat, lon))
+
     result, err = controller.get_multiple_weather(locations)
 
     assert err is not None
