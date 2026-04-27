@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from LB7.src.shared.config import settings
-from models.entities import Base
+from LB7.src.models.entities import Base
 
 engine = create_engine(
     settings.DATABASE_URL,
