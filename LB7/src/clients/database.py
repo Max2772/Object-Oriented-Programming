@@ -12,7 +12,7 @@ engine = create_engine(
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
 
-def init_db() -> None:
+def init_db():
     Base.metadata.create_all(bind=engine)
 
 
