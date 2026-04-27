@@ -16,6 +16,8 @@ colorama==0.4.6
     # via click
 fastapi==0.136.1
     # via -r requirements.in
+greenlet==3.5.0
+    # via sqlalchemy
 h11==0.16.0
     # via uvicorn
 idna==3.13
@@ -30,6 +32,8 @@ pydantic-settings==2.14.0
     # via -r requirements.in
 python-dotenv==1.2.2
     # via pydantic-settings
+sqlalchemy==2.0.49
+    # via -r requirements.in
 starlette==1.0.0
     # via fastapi
 typing-extensions==4.15.0
@@ -38,6 +42,7 @@ typing-extensions==4.15.0
     #   fastapi
     #   pydantic
     #   pydantic-core
+    #   sqlalchemy
     #   starlette
     #   typing-inspection
 typing-inspection==0.4.2

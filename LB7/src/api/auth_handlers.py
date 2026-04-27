@@ -1,7 +1,3 @@
-from fastapi import APIRouter, Depends, HTTPException
-
-from LB7.src.shared.responses import ApiResponse
+from fastapi import APIRouter
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
-
-
