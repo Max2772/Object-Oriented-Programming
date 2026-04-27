@@ -1,8 +1,16 @@
+from contextlib import asynccontextmanager
+
 import uvicorn
 from fastapi import FastAPI
 
 from LB7.src.shared.config import settings
 from LB7.src.shared.responses import ApiResponse
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    yield
+
 
 app = FastAPI(
     title=settings.APP_TITLE,
