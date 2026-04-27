@@ -3,7 +3,7 @@ from typing import List, Optional, Type, TypeVar, Generic
 
 from sqlalchemy.orm import Session
 
-from LB7.src.models.entities import Base, Account
+from LB7.src.models.entities import Base, Account, User
 
 T = TypeVar("T", bound=Base)
 
@@ -73,3 +73,14 @@ class AccountRepository(SQLAlchemyRepository[Account]):
 
     def get_by_user(self, user_id: int) -> List[Account]:
         return self._db.query(Account).filter(Account.user_id == user_id).all()
+
+
+class UserRepository(SQLAlchemyRepository[User]):
+    def __init__(self, db: Session):
+        super().__init__(db, User)
+
+    def get_by_username(self, username: str) -> Optional[User]:
+        return self._db.query(User).filter(User.username == username).first()
+
+    def get_by_email(self, email: str) -> Optional[User]:
+        return self._db.query(User).filter(User.email == email).first()
