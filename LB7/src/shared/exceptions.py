@@ -5,11 +5,6 @@ class AppException(Exception):
         super().__init__(detail)
 
 
-class NotFoundException(AppException):
-    def __init__(self, detail: str = "Resource not found"):
-        super().__init__(detail=detail, status_code=404)
-
-
 class UnauthorizedException(AppException):
     def __init__(self, detail: str = "Invalid credentials"):
         super().__init__(detail=detail, status_code=401)
@@ -18,3 +13,13 @@ class UnauthorizedException(AppException):
 class ForbiddenException(AppException):
     def __init__(self, detail: str = "Access denied"):
         super().__init__(detail=detail, status_code=403)
+
+
+class NotFoundException(AppException):
+    def __init__(self, detail: str = "Resource not found"):
+        super().__init__(detail=detail, status_code=404)
+
+
+class ConflictException(AppException):
+    def __init__(self, detail: str = "Data conflict"):
+        super().__init__(detail=detail, status_code=409)

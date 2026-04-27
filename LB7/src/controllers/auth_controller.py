@@ -7,7 +7,7 @@ from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
 from LB7.src.models.entities import User
-from LB7.src.models.schemas import UserRegisterDTO, UserLoginDTO, TokenDTO, UserOutDTO
+from LB7.src.models.DTO.auth import UserRegisterDTO, UserLoginDTO, TokenDTO, UserOutDTO
 from LB7.src.shared.config import settings
 from LB7.src.shared.exceptions import ConflictException, UnauthorizedException
 

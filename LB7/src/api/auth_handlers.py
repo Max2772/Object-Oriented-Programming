@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from LB7.src.clients.database import get_db
 from LB7.src.controllers.auth_controller import AuthController
-from LB7.src.models.schemas import UserRegisterDTO, UserLoginDTO, TokenDTO, UserOutDTO
+from LB7.src.models.DTO.auth import UserRegisterDTO, UserLoginDTO, TokenDTO
 from LB7.src.shared.exceptions import AppException
 from LB7.src.shared.responses import ApiResponse
 
