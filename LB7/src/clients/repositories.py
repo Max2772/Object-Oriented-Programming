@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional, Type, TypeVar, Generic
 
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
-from LB7.src.models.entities import Base, Account, User
+from LB7.src.models.entities import Base, Account, User, Budget, Transaction
 
 T = TypeVar("T", bound=Base)
 
@@ -84,3 +85,75 @@ class UserRepository(SQLAlchemyRepository[User]):
 
     def get_by_email(self, email: str) -> Optional[User]:
         return self._db.query(User).filter(User.email == email).first()
+
+
+class TransactionRepository(SQLAlchemyRepository[Transaction]):
+
+    def __init__(self, db: Session):
+        super().__init__(db, Transaction)
+
+    def get_by_account(self, account_id: int) -> List[Transaction]:
+        return self._db.query(Transaction).filter(
+            Transaction.account_id == account_id
+        ).all()
+
+    def get_by_user_and_period(
+            self,
+            account_ids: List[int],
+            date_from=None,
+            date_to=None,
+            category=None,
+            transaction_type=None,
+    ) -> List[Transaction]:
+        query = self._db.query(Transaction).filter(
+            Transaction.account_id.in_(account_ids)
+        )
+        if date_from:
+            query = query.filter(Transaction.created_at >= date_from)
+        if date_to:
+            query = query.filter(Transaction.created_at <= date_to)
+        if category:
+            query = query.filter(Transaction.category == category)
+        if transaction_type:
+            query = query.filter(Transaction.transaction_type == transaction_type)
+        return query.order_by(Transaction.created_at.desc()).all()
+
+
+class BudgetRepository(SQLAlchemyRepository[Budget]):
+
+    def __init__(self, db: Session):
+        super().__init__(db, Budget)
+
+    def get_by_user(self, user_id: int) -> List[Budget]:
+        return self._db.query(Budget).filter(Budget.user_id == user_id).all()
+
+    def get_by_user_and_period(
+            self, user_id: int, year: int, month: int
+    ) -> List[Budget]:
+        return (
+            self._db.query(Budget)
+            .filter(
+                and_(
+                    Budget.user_id == user_id,
+                    Budget.year == year,
+                    Budget.month == month,
+                )
+            )
+            .all()
+        )
+
+    def get_by_user_category_period(
+            self, user_id: int, category, year: int, month: int
+    ) -> Optional[Budget]:
+        return (
+            self._db.query(Budget)
+            .filter(
+                and_(
+                    Budget.user_id == user_id,
+                    Budget.category == category,
+                    Budget.year == year,
+                    Budget.month == month,
+                )
+            )
+            .first()
+        )
