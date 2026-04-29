@@ -8,7 +8,7 @@ from LB7.src.models.enums import AccountType
 
 class AccountCreateDTO(BaseModel):
     name: str = Field(..., min_length=1, max_length=100, examples=["My Wallet"])
-    account_type: AccountType = Field(..., examples=["cash"])
+    account_type: AccountType = Field(..., examples=[AccountType.CASH.value])
     balance: float = Field(default=0.0, ge=0, examples=[1000.0])
 
 
