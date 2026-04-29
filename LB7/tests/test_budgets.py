@@ -89,7 +89,7 @@ def test_get_budgets_empty(client, auth_headers):
 
 def test_budget_exceeded_warning(client, auth_headers, sample_account):
     client.post("/api/v1/budgets/", json={
-        "category": "food",
+        "category": "transport",
         "monthly_limit": 1000.0,
         "year": 2026,
         "month": 4,
