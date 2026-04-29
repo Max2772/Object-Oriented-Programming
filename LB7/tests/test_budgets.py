@@ -98,8 +98,8 @@ def test_budget_exceeded_warning(client, auth_headers, sample_account):
     resp = client.post("/api/v1/transactions/", json={
         "amount": 1500.0,
         "transaction_type": "expense",
-        "category": "food",
-        "description": "Big Purchase",
+        "category": "transport",
+        "description": "Car Repair",
         "account_id": sample_account["id"],
     }, headers=auth_headers)
     assert resp.status_code == 201
