@@ -96,7 +96,7 @@ def test_login_nonexistent_user(client):
 
 def test_protected_endpoint_without_token(client):
     resp = client.get("/api/v1/accounts/")
-    assert resp.status_code == 403
+    assert resp.status_code == 401
 
 
 def test_protected_endpoint_with_invalid_token(client):
