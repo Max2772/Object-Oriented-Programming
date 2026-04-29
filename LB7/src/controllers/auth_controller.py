@@ -1,17 +1,17 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-from LB7.src.clients.repositories import UserRepository
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from LB7.src.models.entities import User
+from LB7.src.clients.repositories import UserRepository
 from LB7.src.models.DTO.auth import UserRegisterDTO, UserLoginDTO, TokenDTO, UserOutDTO
+from LB7.src.models.entities import User
 from LB7.src.shared.config import settings
 from LB7.src.shared.exceptions import ConflictException, UnauthorizedException
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class AuthController:
@@ -58,11 +58,11 @@ class AuthController:
 
     @staticmethod
     def _hash_password(password: str) -> str:
-        return pwd_context.hash(password)
+        return bcrypt_context.hash(password)
 
     @staticmethod
     def _verify_password(plain: str, hashed: str) -> bool:
-        return pwd_context.verify(plain, hashed)
+        return bcrypt_context.verify(plain, hashed)
 
     @staticmethod
     def _create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:

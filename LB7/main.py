@@ -23,7 +23,8 @@ app = FastAPI(
         "Finance Tracker API"
     ),
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
+    lifespan=lifespan
 )
 
 API_PREFIX = "/api/v1"

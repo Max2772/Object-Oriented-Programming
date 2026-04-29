@@ -9,7 +9,11 @@ class Settings(BaseSettings):
     API_PORT: int = 8000
     RELOAD: bool = True
 
-    DATABASE_URL: str = "sqlite:///finance_tracker.db"
+    SECRET_KEY: str = "1234"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+
+    DATABASE_URL: str = "sqlite:///./finance_tracker.db"
 
     class Config:
         env_file = ".env"
