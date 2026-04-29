@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     API_PORT: int = 8000
     RELOAD: bool = True
 
-    SECRET_KEY: str = "1234"
+    SECRET_KEY: str = "super-puper-mega-secret-key-1234"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 

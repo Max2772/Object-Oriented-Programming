@@ -9,7 +9,8 @@ from LB7.src.clients.repositories import (
     BudgetRepository,
 )
 from LB7.src.models.DTO.transactions import TransactionCreateDTO, TransactionOutDTO
-from LB7.src.models.entities import Transaction, TransactionType, CategoryType
+from LB7.src.models.entities import Transaction
+from LB7.src.models.enums import TransactionType, CategoryType
 from LB7.src.shared.exceptions import (
     NotFoundException,
     ForbiddenException,
