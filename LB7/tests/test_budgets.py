@@ -120,7 +120,7 @@ def test_no_warning_within_limit(client, auth_headers, sample_account):
         "amount": 100.0,
         "transaction_type": "expense",
         "category": "food",
-        "description": "Cofe",
+        "description": "Coffee",
         "account_id": sample_account["id"],
     }, headers=auth_headers)
     assert resp.status_code == 201

@@ -23,3 +23,15 @@ class NotFoundException(AppException):
 class ConflictException(AppException):
     def __init__(self, detail: str = "Data conflict"):
         super().__init__(detail=detail, status_code=409)
+
+
+class BudgetExceededException(AppException):
+    def __init__(self, category: str, limit: float, spent: float):
+        self.category = category
+        self.limit = limit
+        self.spent = spent
+        detail = (
+            f"Attention! The limit for category '{category}' has been exceeded: "
+            f"limit {limit:.2f}, spent {spent:.2f}"
+        )
+        super().__init__(detail=detail, status_code=200)

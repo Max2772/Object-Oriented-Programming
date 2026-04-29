@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from LB7.src.api.account_handlers import ACCOUNT_ROUTER
 from LB7.src.api.auth_handlers import AUTH_ROUTER
 from LB7.src.api.budget_handlers import BUDGETS_ROUTER
+from LB7.src.api.transaction_handlers import TRANSACTIONS_ROUTER
 from LB7.src.clients.database import init_db
 from LB7.src.shared.config import settings
 from LB7.src.shared.responses import ApiResponse
@@ -33,6 +34,7 @@ API_PREFIX = "/api/v1"
 app.include_router(ACCOUNT_ROUTER, prefix=API_PREFIX)
 app.include_router(AUTH_ROUTER, prefix=API_PREFIX)
 app.include_router(BUDGETS_ROUTER, prefix=API_PREFIX)
+app.include_router(TRANSACTIONS_ROUTER, prefix=API_PREFIX)
 
 
 @app.get("/", tags=["General"], summary="Base endpoint")
