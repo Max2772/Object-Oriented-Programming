@@ -5,3 +5,5 @@ python-jose
 passlib
 bcrypt
 uvicorn
+pytest
+httpx
